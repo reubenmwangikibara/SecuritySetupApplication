@@ -16,8 +16,9 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
+    //zQVBroEyT9HQpRyatLUFO9okL/zLoeHBKecV3bodEYKgw4WgjdJQ0OKRvrw/tktj
     //generated from herehttps://generate-random.org/encryption-key-generator?count=1&bytes=32&cipher=aes-256-cbc&string=&password=
-    private static final String SECRET_KEY="zQVBroEyT9HQpRyatLUFO9okL/zLoeHBKecV3bodEYKgw4WgjdJQ0OKRvrw/tktj";
+    private static final String SECRET_KEY="dvCLuP26wOdySZEHB3Vb+lzytspFfPNpEDQAG6WJGuw=";
     public String extractUsername(String token) {
         //getSubject is the email or the username
         return extractClaim(token,Claims::getSubject);
@@ -42,7 +43,7 @@ public class JwtService {
         return Jwts.builder().setClaims(extractClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 100*60*24))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000*60*60*24))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -65,11 +66,16 @@ public class JwtService {
 
     // extracting claim
     private Claims extractAllClaims(String token){
-        return Jwts.parserBuilder()
-                .setSigningKey(getSignInKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+       try {
+           return Jwts.parserBuilder()
+                   .setSigningKey(getSignInKey())
+                   .build()
+                   .parseClaimsJws(token)
+                   .getBody();
+       } catch (Exception e) {
+           System.out.println("Error parsing token: " + e.getMessage());
+           throw e;
+       }
 
     }
     //create the method
